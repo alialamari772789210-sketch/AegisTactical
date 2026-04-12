@@ -8,3 +8,4 @@ curl -H "Authorization: token YOUR_GITHUB_TOKEN" \
      | tar -xz --strip-components=1
 
 echo "Sync Complete. Integrity Verified for Colonel Ali."
+
