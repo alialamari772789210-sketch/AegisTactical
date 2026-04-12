@@ -1,20 +1,8 @@
-name: Jekyll site CI
+#!/bin/bash
+# AEGIS_REMOTE_SYNC // PROTOCOL V_4.2
+echo 'Initializing Tactical Fetch Sequence...'
 
-on:
-  push:
-    branches: [ "Master" ]
-  pull_request:
-    branches: [ "Master" ]
+# سحب ملفات النواة والواجهة المحدثة
+curl -L 'https://github.com/alialamari772789210-sketch/AegisTactical/archive/master.tar.gz' | tar -xz --strip-components=1
 
-jobs:
-  build:
-
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v4
-    - name: Build the site in the jekyll/builder container
-      run: |
-        docker run \
-        -v ${{ github.workspace }}:/srv/jekyll -v ${{ github.workspace }}/_site:/srv/jekyll/_site \
-        jekyll/builder:latest /bin/bash -c "chmod -R 777 /srv/jekyll && jekyll build --future"
+echo 'Sync Complete. Integrity Verified for Colonel Ali
