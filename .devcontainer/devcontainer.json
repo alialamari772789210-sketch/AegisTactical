@@ -1,4 +1,12 @@
-{
-  "image": "mcr.microsoft.com/devcontainers/universal:2",
-  "features": {}
-}
+"name": "Aegis Tactical Master Environment",
+  "image": "mcr.microsoft.com/devcontainers/python:3.11",
+  "features": {
+    "ghcr.io/devcontainers/features/android-sdk:1": "latest",
+    "ghcr.io/devcontainers/features/node:1": "latest"
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": ["ms-python.python", "vscjava.vscode-java-pack", "fwcd.kotlin"]
+    }
+  },
+  "postCreateCommand": "chmod +x sync.sh && ./sync.sh
