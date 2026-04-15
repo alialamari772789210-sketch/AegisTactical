@@ -1,4 +1,15 @@
 {
-  "image": "mcr.microsoft.com/devcontainers/universal:2",
-  "features": {}
+  "name": "Aegis Tactical Dev Container",
+  "dockerFile": "Dockerfile",
+  "context": ".",
+  "settings": {
+    "terminal.integrated.defaultProfile.linux": "bash"
+  },
+  "extensions": [
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode"
+  ],
+  "features": {},
+  "postCreateCommand": "npm install",
+  "remoteUser": "node"
 }
