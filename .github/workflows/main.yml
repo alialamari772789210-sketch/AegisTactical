@@ -25,20 +25,24 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
-      # محاولة إصلاح الـ Wrapper إذا كان مفقوداً
-      - name: Setup Gradle Wrapper
-        run: gradle wrapper
+      # 1. إعطاء صلاحيات لملفاتك الخاصة وملف Gradle
+      - name: Grant permissions
+        run: |
+          chmod +x gradlew
+          chmod +x sync.sh
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
+      # 2. تشغيل ملف المزامنة (الذي ظهر في صورتك) قبل البناء
+      - name: Run Tactical Sync
+        run: ./sync.sh
 
-      # بناء نسخة Debug لأنها لا تحتاج لمفاتيح تشفير معقدة
+      # 3. بناء نسخة الـ APK
       - name: Build with Gradle
-        run: ./gradlew assembleDebug --stacktrace
+        run: ./gradlew assembleDebug --stacktrace --info
 
-      # رفع الملف الناتج إلى قسم Releases في GitHub
+      # 4. رفع الملف الناتج
       - name: Create Release and Upload APK
         uses: softprops/action-gh-release@v1
+        if: success() # لن يتم الرفع إلا إذا نجح البناء
         with:
           files: app/build/outputs/apk/debug/*.apk
           tag_name: ${{ env.RELEASE_VERSION }}-Build
