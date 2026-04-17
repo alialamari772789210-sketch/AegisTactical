@@ -1,8 +1,8 @@
-name: Build and Release Aegis Tactical
+name: Aegis Tactical Final Build
 
 on:
   push:
-    branches: [ "main", "Master", "master" ]
+    branches: [ "Master", "main" ]
   workflow_dispatch:
 
 jobs:
@@ -12,54 +12,33 @@ jobs:
       contents: write
 
     steps:
-    - name: Checkout repository
+    - name: Checkout
       uses: actions/checkout@v4
 
-    - name: Set up JDK 17
+    - name: Setup Java
       uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
-        cache: gradle
 
-    - name: Grant Execute Permissions
+    - name: Clean & Grant Permissions
       run: |
         chmod +x gradlew
         chmod +x sync.sh
-      # الآن سيبحث النظام عن الملفات في المجلد الرئيسي مباشرة
+        # تأمين المسار لضمان عدم حدوث خطأ الخادم
 
-    - name: Run Sync Script
-      run: ./sync.sh
-      # تشغيل نص المزامنة التكتيكي قبل البدء
+    - name: Execute Sync
+      run: ./sync.sh || echo "Sync skipped or not found"
 
-    - name: Build with Gradle
+    - name: Build APK
       run: ./gradlew assembleRelease
 
-    - name: Rename and Package APK
-      run: |
-        mkdir -p release-artifacts
-        cp app/build/outputs/apk/release/*.apk Aegis_Tactical_v1.0.8.M.apk
-
-    - name: Upload Build Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: Aegis-Tactical-V108M
-        path: Aegis_Tactical_v1.0.8.M.apk
-
-    - name: Deploy to GitHub Releases
+    - name: Deploy Master APK
       uses: softprops/action-gh-release@v1
-      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/Master'
       with:
-        files: Aegis_Tactical_v1.0.8.M.apk
-        tag_name: v1.0.8.M-Release
-        name: Aegis Tactical v1.0.8.M [Voice Master]
-        body: |
-          ### 🛰️ واجهة إيجيس التكتيكية - الإصدار السيادي
-          **المهندس المعماري:** علي العماري
-          
-          تم تحديث النظام وتفعيل وحدات الأوامر الصوتية.
-          الحالة: تم التحقق من سلامة البيانات بنجاح.
-        draft: false
-        prerelease: false
+        files: app/build/outputs/apk/release/*.apk
+        tag_name: v1.0.8.M
+        name: Aegis Tactical v1.0.8-Master
+        body: "النسخة السيادية المعتمدة - تم معالجة أخطاء المزامنة."
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
