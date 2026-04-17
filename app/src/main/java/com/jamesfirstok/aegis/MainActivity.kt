@@ -1,26 +1,38 @@
-package com.jamesfirstok.aegis
+package com.aegis.tactical.v108
 
 import android.os.Bundle
-import android.webkit.WebView
-import android.webkit.WebViewClient
+import android.speech.tts.TextToSpeech
 import androidx.appcompat.app.AppCompatActivity
+import android.widget.TextView
+import java.util.Locale
 
-class MainActivity : AppCompatActivity() {
-    // هذا هو الكود الذي ظهر في الصورة الأولى
-    private lateinit var webView: WebView
+class MainActivity : AppCompatActivity(), TextToSpeech.OnInitListener {
+    private lateinit var tts: TextToSpeech
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
-        // إعداد عرض الواجهة
-        webView = WebView(this)
-        setContentView(webView)
+        setContentView(R.layout.activity_main)
 
-        // تفعيل الإعدادات التقنية (كما في سجلات Aegis)
-        webView.settings.javaScriptEnabled = true
-        webView.webViewClient = WebViewClient()
+        tts = TextToSpeech(this, this)
         
-        // الرابط الذي سيفتحه التطبيق (رابط واجهة Stitch الخاصة بك)
-        webView.loadUrl("https://your-aegis-interface-url.com")
+        val welcomeText = findViewById<TextView>(R.id.welcomeText)
+        // حقن اسم العقيد علي العماري في واجهة النظام
+        welcomeText.text = "مرحباً بكم سيادة العقيد علي العماري في منظومة السيادة\nSovereignty System Activated"
+    }
+
+    override fun onInit(status: Int) {
+        if (status == TextToSpeech.SUCCESS) {
+            tts.language = Locale("ar")
+            // ترحيب صوتي عند التشغيل
+            tts.speak("مرحباً بكم سيادة العقيد علي العماري في منظومة السيادة", TextToSpeech.QUEUE_FLUSH, null, null)
+        }
+    }
+
+    override fun onDestroy() {
+        if (::tts.isInitialized) {
+            tts.stop()
+            tts.shutdown()
+        }
+        super.onDestroy()
     }
 }
