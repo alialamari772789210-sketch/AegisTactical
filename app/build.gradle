@@ -4,21 +4,23 @@ plugins {
 }
 
 android {
-    namespace 'com.jamesfirstok.aegis'
+    // توحيد النطاق مع اسم الحزمة الجديد
+    namespace 'com.aegis.tactical.v108'
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.jamesfirstok.aegis"
+        // يجب أن يطابق هذا الاسم بقية الملفات (v108)
+        applicationId "com.aegis.tactical.v108"
         minSdk 24
         targetSdk 33
         versionCode 1
-        versionName "1.0.8"
+        versionName "1.0.8-SOVEREIGN"
     }
 
     buildTypes {
         release {
             minifyEnabled false
-            // هنا يضع Stitch إعدادات التوقيع تلقائياً
+            // التوقيع الرقمي سيتم معالجته عبر GitHub Actions
         }
     }
 }
