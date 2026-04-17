@@ -1,0 +1,29 @@
+name: Kinetic Intelligence Sync
+
+on:
+  workflow_dispatch: # يتيح لك تشغيل المزامنة يدوياً بضغطة زر
+  schedule:
+    - cron: '0 */6 * * *' # تنفيذ البروتوكول تلقائياً كل 6 ساعات
+
+jobs:
+  interface_sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # ضروري لكي يتمكن النظام من تعديل المجلدات
+
+    steps:
+      - name: Initialize Architectural Core
+        uses: actions/checkout@v4
+
+      - name: Execute Protocol
+        run: |
+          # التأكد من وجود ملف المزامنة ومنحه صلاحية التنفيذ
+          if [ -f "sync.sh" ]; then
+            chmod +x sync.sh
+            ./sync.sh
+          else
+            echo "Error: sync.sh not found in root directory"
+            exit 1
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
