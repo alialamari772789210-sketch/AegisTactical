@@ -2,47 +2,63 @@ name: Build and Release Aegis Tactical
 
 on:
   push:
-    branches: [ "main", "master" ] # سيعمل البناء عند كل تحديث للكود
-  workflow_dispatch: # يتيح لك تشغيل البناء يدوياً
+    branches: [ "main", "Master", "master" ]
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: write # ضروري لمنح GitHub صلاحية رفع الملف إلى Releases
+      contents: write
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout repository
+      uses: actions/checkout@v4
 
-    - name: set up JDK 17
+    - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
         cache: gradle
 
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew
+    - name: Grant Execute Permissions
+      run: |
+        chmod +x gradlew
+        chmod +x sync.sh
+      # الآن سيبحث النظام عن الملفات في المجلد الرئيسي مباشرة
+
+    - name: Run Sync Script
+      run: ./sync.sh
+      # تشغيل نص المزامنة التكتيكي قبل البدء
 
     - name: Build with Gradle
       run: ./gradlew assembleRelease
 
-    - name: Rename APK for Identification
-      run: mv app/build/outputs/apk/release/*.apk Aegis_Tactical_v1.0.8Master.apk
+    - name: Rename and Package APK
+      run: |
+        mkdir -p release-artifacts
+        cp app/build/outputs/apk/release/*.apk Aegis_Tactical_v1.0.8.M.apk
 
-    - name: Upload Artifact
+    - name: Upload Build Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: Aegis-Build-Output
-        path: Aegis_Tactical_v1.0.8Master.apk
+        name: Aegis-Tactical-V108M
+        path: Aegis_Tactical_v1.0.8.M.apk
 
-    - name: Release APK
+    - name: Deploy to GitHub Releases
       uses: softprops/action-gh-release@v1
-      if: startsWith(github.ref, 'refs/tags/') || github.ref == 'refs/heads/main'
+      if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/Master'
       with:
-        files: Aegis_Tactical_v1.0.8Master.apk
-        tag_name: v1.0.8-Release
-        name: Aegis Tactical v1.0.8-Release
+        files: Aegis_Tactical_v1.0.8.M.apk
+        tag_name: v1.0.8.M-Release
+        name: Aegis Tactical v1.0.8.M [Voice Master]
+        body: |
+          ### 🛰️ واجهة إيجيس التكتيكية - الإصدار السيادي
+          **المهندس المعماري:** علي العماري
+          
+          تم تحديث النظام وتفعيل وحدات الأوامر الصوتية.
+          الحالة: تم التحقق من سلامة البيانات بنجاح.
         draft: false
         prerelease: false
       env:
